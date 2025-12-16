@@ -6,14 +6,7 @@ using namespace std;
 #include <ctime>
 #include <cmath>
 #include <fstream>
-//function of the program:
-//naive-gen width height mcount
-#define MAX_WIDTH 50
-#define MIN_WIDTH 9
-#define MAX_HEIGHT 50
-#define MIN_HEIGHT 9
-#define MAX_DENSITY 0.25
-
+#include "head.hpp"
 
 int width;
 int height;
