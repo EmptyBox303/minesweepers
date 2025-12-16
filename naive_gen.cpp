@@ -79,8 +79,7 @@ int main(int argc, char* argv[]){
 
     //
     ofstream mineField("outputs/minefield.txt");
-    mineField << width << " " << height << " " << mineCount << "\n";
-    mineField << spawnX << " " << spawnY << "\n";
+    mineField << width << " " << height << " " << mineCount << " " << spawnX << " " << spawnY << "\n";
 
 
     //generate boolean map of mines
