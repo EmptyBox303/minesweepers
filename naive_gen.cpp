@@ -82,7 +82,7 @@ int main(int argc, char* argv[]){
     lineBuffer[2 * width - 1] = '\n';
     lineBuffer[2 * width] = '\0';
     
-    ofstream rawMineMap("rawmines.txt");
+    ofstream rawMineMap("outputs/rawmines.txt");
 
     //generate rawMineMap
     for(int i = 1; i <= height; i++){
@@ -112,7 +112,7 @@ int main(int argc, char* argv[]){
     rawMineMap.close();
 
     //generate minefield
-    ofstream mineField("minefield.txt");
+    ofstream mineField("outputs/minefield.txt");
     int currentTileMineCount;
 
     //generate mineField
