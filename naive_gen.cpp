@@ -130,8 +130,6 @@ int main(int argc, char* argv[]){
                 isTileMined[i-1][j-1];
             lineBuffer[2*(j-1)] = (isTileMined[i][j])? 'M' : '0' + currentTileMineCount;
         }
-        if (i == spawnY) 
-            lineBuffer[2 * spawnX - 2] = 'X';
         mineField << lineBuffer;
     }
 
