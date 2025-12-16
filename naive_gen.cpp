@@ -21,7 +21,6 @@ int mineCount;
 int area;
 
 bool isTileMined[MAX_WIDTH+2][MAX_HEIGHT+2];
-char mineField[MAX_WIDTH+2][MAX_HEIGHT+2];  
 char lineBuffer[2 * MAX_WIDTH + 1];
 
 int main(int argc, char* argv[]){
@@ -112,13 +111,29 @@ int main(int argc, char* argv[]){
     //close file
     rawMineMap.close();
 
+    //generate minefield
     ofstream mineField("minefield.txt");
+    int currentTileMineCount;
 
     //generate mineField
      for(int i = 1; i <= height; i++){
         for(int j = 1; j <= width; j++){
-
+            currentTileMineCount = 
+                isTileMined[i+1][j+1] + 
+                isTileMined[i][j+1] + 
+                isTileMined[i-1][j+1] + 
+                isTileMined[i+1][j] + 
+                isTileMined[i-1][j] + 
+                isTileMined[i+1][j-1] + 
+                isTileMined[i][j-1] + 
+                isTileMined[i-1][j-1];
+            lineBuffer[2*(j-1)] = (isTileMined[i][j])? 'M' : '0' + currentTileMineCount;
         }
+        if (i == spawnY) 
+            lineBuffer[2 * spawnX - 2] = 'X';
+        mineField << lineBuffer;
     }
+
+    mineField.close();
     return 0;
 }
