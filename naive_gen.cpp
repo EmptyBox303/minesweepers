@@ -83,7 +83,8 @@ int main(int argc, char* argv[]){
     lineBuffer[2 * width] = '\0';
     
     ofstream rawMineMap("outputs/rawmines.txt");
-
+    rawMineMap << width << " " << height << " " << mineCount << "\n";
+    rawMineMap << spawnX << " " << spawnY << "\n";
     //generate rawMineMap
     for(int i = 1; i <= height; i++){
         for(int j = 1; j <= width; j++){
