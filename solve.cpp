@@ -19,7 +19,7 @@ int mineCount;
 int spawnX;
 int spawnY;
 
-char field[MAX_WIDTH][MAX_HEIGHT];
+char key[MAX_WIDTH][MAX_HEIGHT];
 
 int main(){
     //open mineField for reading
@@ -50,8 +50,19 @@ int main(){
     spawnX = stoi(tokens[3]);
     spawnY = stoi(tokens[4]);
 
+    //for now we will assume these parameters are reasonable and valid
+    for(int i = 0; i < height; i++){
+        //read in line from file
+        getline(mineField,line);
+        
+        for(int j = 0; j < width; j++){
+            char state = line[2 * j];
+        }
+    }
 
-    
+    //close mineField
+    mineField.close();
+
     
     return 0;
 }
