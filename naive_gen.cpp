@@ -13,7 +13,7 @@ int height;
 int mineCount;
 int area;
 
-bool isTileMined[MAX_WIDTH+2][MAX_HEIGHT+2];
+bool isTileMined[MAX_HEIGHT+2][MAX_WIDTH+2];
 char lineBuffer[2 * MAX_WIDTH + 1];
 
 int main(int argc, char* argv[]){
