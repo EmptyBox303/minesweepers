@@ -210,13 +210,15 @@ int main(){
 //we start out with the spawn point tile as tile of interest
 
 //
-
+bool is_actual_tile(int X, int Y){
+    return (X >= 1 && X <= width && Y >= 1  && Y <= height);
+}
 
 int uncleared_neighbors_count(int X, int Y){
     int ret = 0;
     for (int i = -1; i <= 1; i++) 
     for(int j = -1; j <= 1; j++)
-    if((i || j) && !revealed[Y+i][X+j]) ret++;
+    if((i || j) && is_actual_tile(X+j,Y+i) && !revealed[Y+i][X+j]) ret ++;
     return ret;
 }
 
@@ -224,22 +226,24 @@ int flagged_neighbors_count(int X, int Y){
     int ret = 0;
     for (int i = -1; i <= 1; i++) 
     for(int j = -1; j <= 1; j++)
-    if((i || j) && flagged[Y+i][X+j]) ret++;
+    if((i || j) && is_actual_tile(X+j,Y+i) && flagged[Y+i][X+j]) ret++;
     return ret;
 }
 
 void flag_uncleared_neighbors(int X, int Y){
     for (int i = -1; i <= 1; i++) 
     for(int j = -1; j <= 1; j++)
-    if((i || j) && !revealed[Y+i][X+j]) flagged[Y+i][X+j] = true;
+    if((i || j) && is_actual_tile(X+j,Y+i) && !revealed[Y+i][X+j]) flagged[Y+i][X+j] = true;
 }
 
 void clear_unflagged_neighbors(int X, int Y){
     for (int i = -1; i <= 1; i++){
         for(int j = -1; j <= 1; j++){
-            if((i || j) && !revealed[Y+i][X+j] && !flagged[Y+i][X+j]){
+            if((i || j) && is_actual_tile(X+j,Y+i) && !revealed[Y+i][X+j] && !flagged[Y+i][X+j]){     
                 revealed[Y+i][X+j] = true;
-                add_tile_of_interest(X+j,Y+i);
+                pointSolveProgress = true;
+                tileOfInterest.push({X+j,Y+i});
+                         
                 //cout << "cleared tile " << X+j << "," << Y+i << " \n";
             }
         }
@@ -248,13 +252,6 @@ void clear_unflagged_neighbors(int X, int Y){
     
 }
 
-void add_tile_of_interest(int X, int Y){
-    if (X >= 1 && X <= width && Y >= 1  && Y <= height){
-        tileOfInterest.push({X,Y});
-        pointSolveProgress = true;
-        //cout << "tile " << X << "," << Y << "(" << (int)key[Y][X]<< ")" << " is added to list of tiles of interest\n";
-    }
-}
 
 void print_current_config(){
     for(int i = 1; i <= height; i++){
