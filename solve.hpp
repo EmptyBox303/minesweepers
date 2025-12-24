@@ -14,6 +14,8 @@ int uncleared_neighbors_count(int X, int Y);
 
 int flagged_neighbors_count(int X, int Y);
 
+int reduced_tile_num(int X, int Y);
+
 void flag_uncleared_neighbors(int X, int Y);
 
 void clear_unflagged_neighbors(int X, int Y);
@@ -21,3 +23,5 @@ void clear_unflagged_neighbors(int X, int Y);
 void print_current_config();
 
 void restore_tiles_of_interest();
+
+int simple_point_solve();

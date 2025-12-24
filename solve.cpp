@@ -11,6 +11,8 @@ using namespace std;
 #include <utility>
 #include <queue>
 #include <vector>
+#include <set>
+
 #include "head.hpp"
 #include "solve.hpp"
 
@@ -23,6 +25,8 @@ int spawnY;
 char key[MAX_HEIGHT+2][MAX_WIDTH+2];
 bool flagged[MAX_HEIGHT+2][MAX_WIDTH+2];
 bool revealed[MAX_HEIGHT+2][MAX_WIDTH+2];
+char reducedBoard[MAX_HEIGHT+2][MAX_WIDTH+2];
+
 bool pointSolveProgress;
 
 char line[2*MAX_WIDTH + 1];
@@ -89,6 +93,15 @@ int main(){
     memset(flagged, 0, sizeof(flagged));
     memset(revealed, 0, sizeof(revealed));
 
+    for(int i = 0; i < height + 2; i++){
+        revealed[i][0] = 1;
+        revealed[i][width + 1] = 1;
+    }
+    for(int i = 1; i < width+1; i++){
+        revealed[0][i] = 1;
+        revealed[height+1][i] = 1;
+    }
+
     //SETUP: tile of interest
     //SETUP: line
     for(int i = 0; i < width-1; i++){
@@ -102,6 +115,107 @@ int main(){
     tileOfInterest.push({spawnX,spawnY});
     revealed[spawnY][spawnX] = 1;
 
+
+
+    
+    int iteration = simple_point_solve();
+   
+    cout << "Simple point solve steps ended with " << iteration << " iterations.\n";
+    cout << "Current board state: \n";
+    print_current_config();
+            
+    
+
+    
+    return 0;
+}
+
+
+//read in info
+//start from starting tile
+
+//we need to keep track of a set of "boundary" tiles that are of interest
+//what tiles are of interest?
+//those on the boundary?
+//we start out with the spawn point tile as tile of interest
+
+//
+bool is_actual_tile(int X, int Y){
+    return (X >= 1 && X <= width && Y >= 1  && Y <= height);
+}
+
+int uncleared_neighbors_count(int X, int Y){
+    int ret = 0;
+    for (int i = -1; i <= 1; i++) 
+    for(int j = -1; j <= 1; j++)
+    if((i || j) && !revealed[Y+i][X+j]) ret ++;
+    return ret;
+}
+
+int flagged_neighbors_count(int X, int Y){
+    int ret = 0;
+    for (int i = -1; i <= 1; i++) 
+    for(int j = -1; j <= 1; j++)
+    if((i || j) && flagged[Y+i][X+j]) ret++;
+    return ret;
+}
+
+int reduced_tile_num(int X, int Y){
+    //only unflagged && 
+    int ret = 0;
+    for (int i = -1; i <= 1; i++) 
+    for(int j = -1; j <= 1; j++)
+    if((i || j) && key[Y+i][X+j] == 0xff && !flagged[Y+i][X+j]) ret++;
+    return ret;
+}
+
+void flag_uncleared_neighbors(int X, int Y){
+    for (int i = -1; i <= 1; i++) 
+    for(int j = -1; j <= 1; j++)
+    if((i || j) && !revealed[Y+i][X+j]) flagged[Y+i][X+j] = true;
+}
+
+void clear_unflagged_neighbors(int X, int Y){
+    for (int i = -1; i <= 1; i++){
+        for(int j = -1; j <= 1; j++){
+            if((i || j) && !revealed[Y+i][X+j] && !flagged[Y+i][X+j]){     
+                revealed[Y+i][X+j] = true;
+                pointSolveProgress = true;
+                tileOfInterest.push({X+j,Y+i});
+                         
+                //cout << "cleared tile " << X+j << "," << Y+i << " \n";
+            }
+        }
+    }
+    
+    
+}
+
+
+void print_current_config(){
+    for(int i = 1; i <= height; i++){
+        for(int j = 1; j <= width; j++){
+            if (!revealed[i][j]){
+                line[2*(j-1)] = (flagged[i][j]) ? 'F' : ' ';
+            }
+            else line[2*(j-1)] = 0x30 + key[i][j];
+        }
+        if (i == spawnY){
+            line[2*(spawnX-1)] = 'X';
+        }
+        cout << line;
+    }
+}
+
+
+
+void restore_tiles_of_interest(){
+    while(!reviewedTiles.empty()){
+        tileOfInterest.push(reviewedTiles.front()); reviewedTiles.pop();
+    }
+}
+
+int simple_point_solve(){
     pointSolveProgress = true;
     int iteration = 1;
     int X;
@@ -113,7 +227,7 @@ int main(){
         //start out assuming no progress is made this iteration
         pointSolveProgress = false;
 
-        cout << "iteration " << iteration << ":\n";
+        //cout << "iteration " << iteration << ":\n";
     
         
         //the goal of each "section" of the algorithm is to comb over each TOI once during each iteration
@@ -144,11 +258,6 @@ int main(){
             
         }
         restore_tiles_of_interest();
-
-
-        cout << "flagging...\n";
-        print_current_config();
-        cout << "\n";
         int discardedCount = 0;
         //section 2: chord
         while(!tileOfInterest.empty()){
@@ -179,98 +288,13 @@ int main(){
         }
         restore_tiles_of_interest();
          
-       
-        cout << "chording...\n";
-        print_current_config();
-        cout << "\n";
         
         
         //print_current_config();
-        cout << "iteration " << iteration <<  " ended. \n";
+        //cout << "iteration " << iteration <<  " ended. \n";
         iteration++;
 
     }
-   
-    
-
-            
-    
-
-    
-    return 0;
-}
-
-
-//read in info
-//start from starting tile
-
-//we need to keep track of a set of "boundary" tiles that are of interest
-//what tiles are of interest?
-//those on the boundary?
-//we start out with the spawn point tile as tile of interest
-
-//
-bool is_actual_tile(int X, int Y){
-    return (X >= 1 && X <= width && Y >= 1  && Y <= height);
-}
-
-int uncleared_neighbors_count(int X, int Y){
-    int ret = 0;
-    for (int i = -1; i <= 1; i++) 
-    for(int j = -1; j <= 1; j++)
-    if((i || j) && is_actual_tile(X+j,Y+i) && !revealed[Y+i][X+j]) ret ++;
-    return ret;
-}
-
-int flagged_neighbors_count(int X, int Y){
-    int ret = 0;
-    for (int i = -1; i <= 1; i++) 
-    for(int j = -1; j <= 1; j++)
-    if((i || j) && is_actual_tile(X+j,Y+i) && flagged[Y+i][X+j]) ret++;
-    return ret;
-}
-
-void flag_uncleared_neighbors(int X, int Y){
-    for (int i = -1; i <= 1; i++) 
-    for(int j = -1; j <= 1; j++)
-    if((i || j) && is_actual_tile(X+j,Y+i) && !revealed[Y+i][X+j]) flagged[Y+i][X+j] = true;
-}
-
-void clear_unflagged_neighbors(int X, int Y){
-    for (int i = -1; i <= 1; i++){
-        for(int j = -1; j <= 1; j++){
-            if((i || j) && is_actual_tile(X+j,Y+i) && !revealed[Y+i][X+j] && !flagged[Y+i][X+j]){     
-                revealed[Y+i][X+j] = true;
-                pointSolveProgress = true;
-                tileOfInterest.push({X+j,Y+i});
-                         
-                //cout << "cleared tile " << X+j << "," << Y+i << " \n";
-            }
-        }
-    }
-    
-    
-}
-
-
-void print_current_config(){
-    for(int i = 1; i <= height; i++){
-        for(int j = 1; j <= width; j++){
-            if (!revealed[i][j]){
-                line[2*(j-1)] = (flagged[i][j]) ? 'F' : ' ';
-            }
-            else line[2*(j-1)] = 0x30 + key[i][j];
-        }
-        if (i == spawnY){
-            line[2*(spawnX-1)] = 'X';
-        }
-        cout << line;
-    }
-}
-
-void restore_tiles_of_interest(){
-    while(!reviewedTiles.empty()){
-        tileOfInterest.push(reviewedTiles.front()); reviewedTiles.pop();
-    }
+    return iteration;
 }
 
