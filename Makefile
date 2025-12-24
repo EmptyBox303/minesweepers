@@ -1,5 +1,5 @@
 naive-gen: naive_gen.cpp head.hpp
-	g++ naive_gen.cpp -o naive-gen
+	g++  -Wall naive_gen.cpp -o naive-gen
 
 solver: solve.cpp head.hpp solve.hpp
-	g++ solve.cpp -o solve
+	g++ -Wall solve.cpp -o solve
